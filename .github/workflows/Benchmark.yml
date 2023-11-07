@@ -33,6 +33,8 @@ jobs:
                         issue_number: context.issue.number,
                         body: 'Running benchmark...'
                       })
+                      console.log(comment)
+                      console.log(comment.id)
                       core.setOutput('id', comment.id)
             - uses: actions/checkout@v4
               with:
