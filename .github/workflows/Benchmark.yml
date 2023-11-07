@@ -53,6 +53,7 @@ jobs:
                 COMMENT_ID: ${{ steps.issue-comment.outputs.id }}
               with:
                   script: |
+                      const { COMMENT_ID } = process.env
                       github.rest.issues.deleteComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
