@@ -35,7 +35,7 @@ jobs:
                       })
                       console.log(comment)
                       console.log(comment.id)
-                      core.setOutput('id', comment.id)
+                      core.setOutput('id', comment.data.id)
             - uses: actions/checkout@v4
               with:
                   repository: ${{ steps.find-ref.outputs.repo }}
