@@ -1,0 +1,53 @@
+name: Run benchmarks
+on:
+    issue_comment:
+        types: [created, edited]
+permissions:
+    contents: write
+    issues: write
+    pull-requests: write # For writing the comment
+jobs:
+    benchmark:
+        if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-benchmark')
+        runs-on: ubuntu-latest
+        steps:
+            - name: Find PR repo and ref
+              uses: actions/github-script@v6
+              id: find-ref
+              with:
+                  script: |
+                      const pr = await github.rest.pulls.get({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        pull_number: context.issue.number
+                      })
+                      core.setOutput('repo', pr.data.head.repo.full_name)
+                      core.setOutput('ref', pr.data.head.ref)
+            - uses: actions/github-script@v6
+              if: github.event.issue.pull_request
+              id: issue-comment
+              with:
+                  script: |
+                      github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body: 'Running benchmark...'
+                      })
+            - uses: actions/checkout@v4
+              with:
+                  repository: ${{ steps.find-ref.outputs.repo }}
+                  ref: ${{ steps.find-ref.outputs.ref }}
+            - name: Wait
+              run: sleep 5
+            - uses: actions/github-script@v6
+              if: github.event.issue.pull_request
+              id: issue-comment
+              with:
+                  script: |
+                      github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body: 'Done'
+                      })
