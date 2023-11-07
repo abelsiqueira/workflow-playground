@@ -24,7 +24,6 @@ jobs:
                       core.setOutput('repo', pr.data.head.repo.full_name)
                       core.setOutput('ref', pr.data.head.ref)
             - uses: actions/github-script@v6
-              if: github.event.issue.pull_request
               id: issue-comment
               with:
                   script: |
@@ -41,7 +40,6 @@ jobs:
             - name: Wait
               run: sleep 5
             - uses: actions/github-script@v6
-              if: github.event.issue.pull_request
               with:
                   script: |
                       github.rest.issues.createComment({
@@ -49,4 +47,14 @@ jobs:
                         repo: context.repo.repo,
                         issue_number: context.issue.number,
                         body: 'Done'
+                      })
+            - uses: actions/github-script@v6
+              env:
+                COMMENT_ID: ${{ steps.issue-comment.outputs.id }}
+              with:
+                  script: |
+                      github.rest.issues.deleteComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        comment_id: `${COMMENT_ID}`
                       })
