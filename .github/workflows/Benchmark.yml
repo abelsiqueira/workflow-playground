@@ -33,7 +33,7 @@ jobs:
                         issue_number: context.issue.number,
                         body: 'Running benchmark...'
                       })
-                      core.setOutput('id', comment.data.id)
+                      core.setOutput('id', comment.id)
             - uses: actions/checkout@v4
               with:
                   repository: ${{ steps.find-ref.outputs.repo }}
